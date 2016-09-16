@@ -3,6 +3,7 @@
 const gulp = require('gulp')
 const babel = require('gulp-babel')
 const sass = require('gulp-sass')
+const autoprefixer = require('gulp-autoprefixer')
 
 gulp.task('default', ['babel', 'sass'])
 
@@ -20,5 +21,9 @@ gulp.task('babel', () => {
 gulp.task('sass', function () {
   return gulp.src('./src/*.sass')
     .pipe(sass().on('error', sass.logError))
+    .pipe(autoprefixer({
+      browsers: ['last 8 versions'],
+      cascade: false
+    }))
     .pipe(gulp.dest('./dst'))
 })
