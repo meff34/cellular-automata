@@ -1,9 +1,11 @@
 'use strict';
 
 const box = document.querySelector('#box')
-const row = document.querySelector('.row')
-const itemsCount = 125
-const speed = 75
+const firstRowDiv = document.querySelector('.row')
+const timer = document.querySelector('#timer')
+const itemsCount = prompt('Сколько элементов в строке?', 100);
+const speed = 1000 / prompt('С какой частотой выводить строки? (Гц)', 5);
+const maxRow = prompt('Cколько вывести строк?', 100);
 
 // automatos
 // http://atlas.wolfram.com/01/01/
@@ -123,16 +125,26 @@ function dublicateRow() {
   box.appendChild(clone)
 }
 
-for (let i = 0; i < itemsCount; i++) {
-  let div = document.createElement('div');
-  ['flex-basis', 'height'].map(property => {
-    div.style[property] = calculateBlockSize()
-  })
-  row.appendChild(div)
+function tick(maxRow) {
+  let countOfRows = document.querySelectorAll('.row').length;
+  if (countOfRows > maxRow) return true
+  timer.innerHTML = `${countOfRows} lines`;
+  dublicateRow()
 }
 
-randomizeRow(row)
-setInterval(_ => {
-  dublicateRow()
+function createFirstRow(row) {
+  for (let i = 0; i < itemsCount; i++) {
+    let div = document.createElement('div');
+    ['flex-basis', 'height'].map(property => {
+      div.style[property] = calculateBlockSize()
+    })
+    row.appendChild(div)
+  }
+}
+
+createFirstRow(firstRowDiv)
+randomizeRow(firstRowDiv)
+let interval = setInterval(_ => {
+  if (tick(maxRow)) clearInterval(interval)
 }, speed)
 
