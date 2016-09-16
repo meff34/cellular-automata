@@ -2,6 +2,11 @@ body {
   overflow-x: hidden;
   background-color: #ddd;
   position: relative;
+  margin: 0;
+}
+
+body, body * {
+  box-sizing: border-box;
 }
 
 #timer {

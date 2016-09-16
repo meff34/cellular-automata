@@ -12,7 +12,5 @@
   "devDependencies": {
     "lite-server": "^2.2.2"
   },
-  "dependencies": {
-    "normalize.css": "^4.2.0"
-  }
+  "dependencies": {}
 }
