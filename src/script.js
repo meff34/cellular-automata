@@ -2,10 +2,11 @@
 
 const box = document.querySelector('#box')
 const firstRowDiv = document.querySelector('.row')
-const timer = document.querySelector('#timer')
-const itemsCount = prompt('Сколько элементов в строке?', 100);
-const speed = 1000 / prompt('С какой частотой выводить строки? (Гц)', 5);
-const maxRow = prompt('Cколько вывести строк?', 100);
+const linesCounterDiv = document.querySelector('#lines')
+const cellsCounterDiv = document.querySelector('#cells')
+const itemsCount = prompt('Сколько элементов в строке?', 100)
+const speed = 1000 / prompt('С какой частотой выводить строки? (Гц)', 5)
+const maxRow = prompt('Cколько вывести строк?', 100)
 
 // automatos
 // http://atlas.wolfram.com/01/01/
@@ -125,9 +126,10 @@ function dublicateRow() {
 }
 
 function tick(maxRow) {
-  let countOfRows = document.querySelectorAll('.row').length;
+  let countOfRows = document.querySelectorAll('.row').length
   if (countOfRows > maxRow) return true
-  timer.innerHTML = `${countOfRows} lines`;
+  linesCounterDiv.innerHTML = `${countOfRows} lines`
+  cellsCounterDiv.innerHTML = `${countOfRows * itemsCount} cells`
   dublicateRow()
 }
 
