@@ -1,0 +1,30 @@
+body {
+  overflow-x: hidden;
+  background-color: #ddd;
+}
+#box {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.row div {
+  flex-shrink: 0;
+  height: 14px;
+}
+
+.row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: relative;
+}
+
+.row div.active {
+  background-color: #888;
+}
+
+.row div.inactive {
+  // background-color: #ddd;
+}
+
