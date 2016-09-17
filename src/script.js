@@ -1,12 +1,14 @@
 'use strict';
 
 const box = document.querySelector('#box')
-const firstRowDiv = document.querySelector('.row')
 const linesCounterDiv = document.querySelector('#lines')
 const cellsCounterDiv = document.querySelector('#cells')
-const itemsCount = prompt('Сколько элементов в строке?', 100)
-const speed = 1000 / prompt('С какой частотой выводить строки? (Гц)', 5)
-const maxRow = prompt('Cколько вывести строк?', 100)
+const navDiv = document.querySelector('#nav')
+let automatoInterval
+
+const itemsCount = 250
+const speed = 120
+const maxRow = prompt('height', 100)
 
 // automatos
 // http://atlas.wolfram.com/01/01/
@@ -17,13 +19,6 @@ const processers = [
   [0,1,1,0,1,1,0,1],
   [0,1,0,0,1,0,0,1]
 ]
-
-const processer = getRandomElFromArr(processers)
-
-function getRandomElFromArr(arr) {
-  let randomI = Math.floor(Math.random()*processers.length)
-  return arr[randomI]
-}
 
 function randomBin() {
   return Math.random() > .5 ? 1 : 0
@@ -42,7 +37,7 @@ function randomizeRow(rowNode) {
   }
 }
 
-function processRow(rowDiv, parentRowDiv) {
+function processRow(rowDiv, parentRowDiv, processer) {
   for (let i = 0; i < itemsCount; i++) {
     let target = rowDiv.childNodes[i]
     let prevSelf = parentRowDiv.childNodes[i]
@@ -121,19 +116,23 @@ function dublicateRow() {
   let lastrow = rows[rows.length - 1]
   let clone = lastrow.cloneNode(true)
   randomizeRow(clone);
-  processRow(clone, lastrow)
   box.appendChild(clone)
+  return [clone, lastrow]
 }
 
-function tick(maxRow) {
+function calculateElements() {
   let countOfRows = document.querySelectorAll('.row').length
-  if (countOfRows > maxRow) return true
   linesCounterDiv.innerHTML = `${countOfRows} lines`
   cellsCounterDiv.innerHTML = `${countOfRows * itemsCount} cells`
-  dublicateRow()
 }
 
-function createFirstRow(row) {
+function tick(maxRow, processer) {
+  const [clone, lastrow] = dublicateRow()
+  calculateElements()
+  processRow(clone, lastrow, processer)
+}
+
+function fillFirstRow(row) {
   for (let i = 0; i < itemsCount; i++) {
     let div = document.createElement('div');
     ['flex-basis', 'height'].map(property => {
@@ -143,9 +142,35 @@ function createFirstRow(row) {
   }
 }
 
-createFirstRow(firstRowDiv)
-randomizeRow(firstRowDiv)
-let interval = setInterval(_ => {
-  if (tick(maxRow)) clearInterval(interval)
-}, speed)
+function startAutomato(ruleset) {
+  const firstRowDiv = document.createElement('div')
+  firstRowDiv.classList.add('row')
+  box.appendChild(firstRowDiv)
+  fillFirstRow(firstRowDiv)
+  randomizeRow(firstRowDiv)
+  automatoInterval = setInterval(() => {
+    let countOfRows = document.querySelectorAll('.row').length
+    if (countOfRows > maxRow) return clearInterval(automatoInterval)
+    tick(maxRow, ruleset)
+  }, speed)
+}
 
+function generateButtons() {
+  processers.map((processer, i) => {
+    let button = document.createElement('button')
+    button.innerHTML = `rule #${i + 1}`
+    button.addEventListener('click', () => {
+      stopAutomato()
+      startAutomato(processer)
+    })
+    navDiv.appendChild(button)
+  })
+}
+
+function stopAutomato() {
+  clearInterval(automatoInterval)
+  box.innerHTML = ''
+}
+
+generateButtons()
+startAutomato(processers[0])

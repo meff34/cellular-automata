@@ -1,23 +1,20 @@
 'use strict';
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var box = document.querySelector('#box');
-var firstRowDiv = document.querySelector('.row');
 var linesCounterDiv = document.querySelector('#lines');
 var cellsCounterDiv = document.querySelector('#cells');
-var itemsCount = prompt('Сколько элементов в строке?', 100);
-var speed = 1000 / prompt('С какой частотой выводить строки? (Гц)', 5);
-var maxRow = prompt('Cколько вывести строк?', 100);
+var navDiv = document.querySelector('#nav');
+var automatoInterval = void 0;
+
+var itemsCount = 250;
+var speed = 120;
+var maxRow = prompt('height', 100);
 
 // automatos
 // http://atlas.wolfram.com/01/01/
 var processers = [[1, 0, 0, 0, 1, 0, 0, 1], [1, 1, 0, 1, 1, 0, 1, 0], [0, 0, 0, 1, 0, 1, 1, 0], [0, 1, 1, 0, 1, 1, 0, 1], [0, 1, 0, 0, 1, 0, 0, 1]];
-
-var processer = getRandomElFromArr(processers);
-
-function getRandomElFromArr(arr) {
-  var randomI = Math.floor(Math.random() * processers.length);
-  return arr[randomI];
-}
 
 function randomBin() {
   return Math.random() > .5 ? 1 : 0;
@@ -36,7 +33,7 @@ function randomizeRow(rowNode) {
   }
 }
 
-function processRow(rowDiv, parentRowDiv) {
+function processRow(rowDiv, parentRowDiv, processer) {
   for (var i = 0; i < itemsCount; i++) {
     var target = rowDiv.childNodes[i];
     var prevSelf = parentRowDiv.childNodes[i];
@@ -77,19 +74,29 @@ function dublicateRow() {
   var lastrow = rows[rows.length - 1];
   var clone = lastrow.cloneNode(true);
   randomizeRow(clone);
-  processRow(clone, lastrow);
   box.appendChild(clone);
+  return [clone, lastrow];
 }
 
-function tick(maxRow) {
+function calculateElements() {
   var countOfRows = document.querySelectorAll('.row').length;
-  if (countOfRows > maxRow) return true;
   linesCounterDiv.innerHTML = countOfRows + ' lines';
   cellsCounterDiv.innerHTML = countOfRows * itemsCount + ' cells';
-  dublicateRow();
 }
 
-function createFirstRow(row) {
+function tick(maxRow, processer) {
+  var _dublicateRow = dublicateRow();
+
+  var _dublicateRow2 = _slicedToArray(_dublicateRow, 2);
+
+  var clone = _dublicateRow2[0];
+  var lastrow = _dublicateRow2[1];
+
+  calculateElements();
+  processRow(clone, lastrow, processer);
+}
+
+function fillFirstRow(row) {
   var _loop = function _loop(i) {
     var div = document.createElement('div');
     ['flex-basis', 'height'].map(function (property) {
@@ -103,8 +110,35 @@ function createFirstRow(row) {
   }
 }
 
-createFirstRow(firstRowDiv);
-randomizeRow(firstRowDiv);
-var interval = setInterval(function (_) {
-  if (tick(maxRow)) clearInterval(interval);
-}, speed);
+function startAutomato(ruleset) {
+  var firstRowDiv = document.createElement('div');
+  firstRowDiv.classList.add('row');
+  box.appendChild(firstRowDiv);
+  fillFirstRow(firstRowDiv);
+  randomizeRow(firstRowDiv);
+  automatoInterval = setInterval(function () {
+    var countOfRows = document.querySelectorAll('.row').length;
+    if (countOfRows > maxRow) return clearInterval(automatoInterval);
+    tick(maxRow, ruleset);
+  }, speed);
+}
+
+function generateButtons() {
+  processers.map(function (processer, i) {
+    var button = document.createElement('button');
+    button.innerHTML = 'rule #' + (i + 1);
+    button.addEventListener('click', function () {
+      stopAutomato();
+      startAutomato(processer);
+    });
+    navDiv.appendChild(button);
+  });
+}
+
+function stopAutomato() {
+  clearInterval(automatoInterval);
+  box.innerHTML = '';
+}
+
+generateButtons();
+startAutomato(processers[0]);
