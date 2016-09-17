@@ -14,7 +14,8 @@ var maxRow = prompt('height', 100);
 
 // automatos
 // http://atlas.wolfram.com/01/01/
-var processers = [[1, 0, 0, 0, 1, 0, 0, 1], [1, 1, 0, 1, 1, 0, 1, 0], [0, 0, 0, 1, 0, 1, 1, 0], [0, 1, 1, 0, 1, 1, 0, 1], [0, 1, 0, 0, 1, 0, 0, 1]];
+var processers = [[1, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0], [1, 1, 0, 1, 1, 0, 1, 0], [0, 0, 0, 1, 0, 1, 1, 0], [0, 1, 1, 0, 1, 1, 0, 1], [0, 1, 0, 0, 1, 0, 0, 1]];
+var startingRule = processers[1];
 
 function randomBin() {
   return Math.random() > .5 ? 1 : 0;
@@ -73,7 +74,7 @@ function dublicateRow() {
   var rows = document.querySelectorAll('.row');
   var lastrow = rows[rows.length - 1];
   var clone = lastrow.cloneNode(true);
-  randomizeRow(clone);
+  // randomizeRow(clone);
   box.appendChild(clone);
   return [clone, lastrow];
 }
@@ -123,11 +124,17 @@ function startAutomato(ruleset) {
   }, speed);
 }
 
-function generateButtons() {
+function generateButtons(startingRule) {
   processers.map(function (processer, i) {
     var button = document.createElement('button');
+    button.setAttribute('data-processer', i);
+    if (startingRule == processer) {
+      button.classList.add('active');
+    }
     button.innerHTML = 'rule #' + (i + 1);
-    button.addEventListener('click', function () {
+    button.addEventListener('click', function (event) {
+      document.querySelector('button.active').classList.remove('active');
+      event.target.classList.add('active');
       stopAutomato();
       startAutomato(processer);
     });
@@ -140,5 +147,5 @@ function stopAutomato() {
   box.innerHTML = '';
 }
 
-generateButtons();
-startAutomato(processers[0]);
+generateButtons(startingRule);
+startAutomato(startingRule);

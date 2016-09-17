@@ -28,7 +28,7 @@ body {
     -webkit-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
     cursor: pointer; }
-    #nav button:hover {
+    #nav button:hover, #nav button.active {
       -webkit-transition: all .2s ease-in-out;
       transition: all .2s ease-in-out;
       background-color: #454565;
