@@ -74,7 +74,7 @@ function dublicateRow() {
   var rows = document.querySelectorAll('.row');
   var lastrow = rows[rows.length - 1];
   var clone = lastrow.cloneNode(true);
-  // randomizeRow(clone);
+  randomizeRow(clone);
   box.appendChild(clone);
   return [clone, lastrow];
 }

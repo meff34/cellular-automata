@@ -117,7 +117,7 @@ function dublicateRow() {
   let rows = document.querySelectorAll('.row')
   let lastrow = rows[rows.length - 1]
   let clone = lastrow.cloneNode(true)
-  // randomizeRow(clone);
+  randomizeRow(clone);
   box.appendChild(clone)
   return [clone, lastrow]
 }
